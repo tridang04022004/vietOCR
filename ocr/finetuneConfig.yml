@@ -1,0 +1,66 @@
+aug:
+  image_aug: false
+  masked_language_model: true
+backbone: vgg19_bn
+cnn:
+  hidden: 256
+  ks:
+  - - 2
+    - 2
+  - - 2
+    - 2
+  - - 2
+    - 1
+  - - 2
+    - 1
+  - - 1
+    - 1
+  ss:
+  - - 2
+    - 2
+  - - 2
+    - 2
+  - - 2
+    - 1
+  - - 2
+    - 1
+  - - 1
+    - 1
+dataloader:
+  num_workers: 3
+  pin_memory: true
+dataset:
+  data_root: /content/vietocr_mixed_dataset
+  image_height: 32
+  image_max_width: 1280
+  image_min_width: 32
+  name: mixed_pdf_text_scan
+  train_annotation: train/labels_norm.txt
+  valid_annotation: val/labels_norm.txt
+device: cuda:0
+optimizer:
+  max_lr: 0.001
+  pct_start: 0.1
+predictor:
+  beamsearch: false
+pretrain: https://vocr.vn/data/vietocr/vgg_seq2seq.pth
+quiet: false
+seq_modeling: seq2seq
+trainer:
+  batch_size: 32
+  checkpoint: ./checkpoint/transformerocr_checkpoint.pth
+  export: /content/vietocr_outputs/vietocr_vgg_seq2seq_mixed.pth
+  iters: 10000
+  log: /content/vietocr_outputs/train_log.txt
+  metrics: 2200
+  print_every: 200
+  valid_every: 1000
+transformer:
+  decoder_embedded: 256
+  decoder_hidden: 256
+  dropout: 0.1
+  encoder_hidden: 256
+  img_channel: 256
+vocab: aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬbBcCdDđĐeEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆfFgGhHiIìÌỉỈĩĨíÍịỊjJkKlLmMnNoOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢpPqQrRsStTuUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰvVwWxXyYỳỲỷỶỹỸýÝỵỴzZ0123456789!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+  □
+weights: https://vocr.vn/data/vietocr/vgg_seq2seq.pth

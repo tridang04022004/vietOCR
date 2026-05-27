@@ -1,0 +1,58 @@
+# GPU-ENABLED Core Dependencies
+# Note: Requires CUDA 11.8 or newer to be installed on your system
+# Install CUDA from: https://developer.nvidia.com/cuda-downloads
+# After installing, verify with: nvidia-smi
+
+# BUILD DEPENDENCIES - Install these FIRST before other packages
+# This must be installed before lmdb builds
+setuptools>=65.5.0
+patch-ng==1.17.4
+
+# PyTorch with CUDA support (GPU-enabled)
+# Using latest stable version with CUDA 12.1 support
+torch==2.5.1+cu121
+torchvision==0.20.1+cu121
+torchaudio==2.5.1+cu121
+
+numpy==1.24.3
+opencv-python==4.8.0.74
+Pillow==9.5.0
+
+# YOLO Models (Layout and Table Detection) - GPU optimized
+# YOLOv11 support requires ultralytics 8.1.0+
+ultralytics>=8.2.0
+
+# Document Text Detection (LINE module) - GPU support
+# Use 1.0.1+ for reliable word detection (0.6.0 has API issues)
+python-doctr>=1.0.1
+huggingface_hub>=0.16.4
+
+# Vietnamese OCR - GPU optimized
+vietocr==0.3.2
+
+# PDF Processing (compatible with Python 3.10)
+pdf2image==1.15.1
+PyPDF2==3.0.1
+
+# GPU utilities
+cupy-cuda12x==12.3.0
+
+# Utilities
+pyyaml==6.0
+tqdm==4.65.0
+scipy==1.11.2
+RapidFuzz==2.15.2
+
+# Optional: For better display and debugging
+matplotlib==3.5.0
+
+# Installation command (CUDA 12.1):
+# pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cu121
+#
+# If you have CUDA 11.8 instead:
+# 1. Edit requirements.txt and replace +cu121 with +cu118 in torch/torchvision/torchaudio
+# 2. Change cupy-cuda12x to cupy-cuda11x
+# 3. Then run: pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cu118
+#
+# Verify GPU setup after installation:
+# python -c "import torch; print(f'GPU Available: {torch.cuda.is_available()}'); print(f'GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"None\"}')"
