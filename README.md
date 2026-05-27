@@ -17,6 +17,8 @@ The pipeline extracts structured markdown from scanned documents and PDFs using 
 
 ## Model Weights Placement (After Unzip)
 
+Download model weights here: https://drive.google.com/file/d/16eL0vhTxUuIDtGxqqxt84snmjFKeaA39/view?usp=sharing
+
 Unzip model weights and place each file in the exact folder below.
 Do not rename the files.
 
