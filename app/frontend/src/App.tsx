@@ -8,6 +8,7 @@ import { Library } from './components/Library';
 import { DocumentView } from './components/DocumentView';
 import { Settings } from './components/Settings';
 import { UploadPage } from './pages/UploadPage';
+import { AutoCorrectPage } from './pages/AutoCorrectPage';
 
 function App() {
   return (
@@ -24,6 +25,18 @@ function App() {
                 <>
                   <Navbar />
                   <UploadPage />
+                </>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/autocorrect"
+            element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <AutoCorrectPage />
                 </>
               </ProtectedRoute>
             }

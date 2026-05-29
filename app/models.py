@@ -127,3 +127,19 @@ class VisualizationResponse(BaseModel):
     page_number: int
     total_pages: int
 
+
+# ═══════════════════════════════════════════════════════════════════════════
+# AUTOCORRECT MODELS
+# ═══════════════════════════════════════════════════════════════════════════
+
+class AutoCorrectRequest(BaseModel):
+    """AutoCorrect request"""
+    text: str = Field(..., max_length=10000, description="Text to correct")
+
+
+class AutoCorrectResponse(BaseModel):
+    """AutoCorrect response"""
+    original: str
+    corrected: str
+    processing_time: float
+

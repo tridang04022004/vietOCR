@@ -61,3 +61,13 @@ export interface DocumentListResponse {
   documents: Document[];
   total: number;
 }
+
+export interface AutoCorrectRequest {
+  text: string;
+}
+
+export interface AutoCorrectResponse {
+  original: string;
+  corrected: string;
+  processing_time: number;
+}

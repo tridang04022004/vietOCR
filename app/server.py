@@ -24,13 +24,17 @@ from sqlalchemy.orm import Session
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from runPipeline import runPipeline
 
+# Import autoCorrect module
+from autoCorrect.predictor import SpellingCorrector
+
 # Import local modules (use relative imports for package compatibility)
 from .database import init_db, get_db, User, Document
 from .auth import hash_password, verify_password, create_access_token, get_current_user
 from .models import (
     HealthResponse, ProcessingResponse, UserRegister, UserLogin,
     Token, UserResponse, DocumentResponse, DocumentDetailResponse, DocumentListResponse,
-    DocumentUpdateRequest, ChangePasswordRequest, ChangeEmailRequest
+    DocumentUpdateRequest, ChangePasswordRequest, ChangeEmailRequest,
+    AutoCorrectRequest, AutoCorrectResponse
 )
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -45,6 +49,32 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 # Storage directory for persistent documents
 STORAGE_DIR = Path(__file__).parent / "storage" / "documents"
 STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+# Global singleton for spelling corrector (lazy-loaded)
+_spelling_corrector: Optional[SpellingCorrector] = None
+
+def get_spelling_corrector() -> SpellingCorrector:
+    """Get or create spelling corrector singleton."""
+    global _spelling_corrector
+
+    if _spelling_corrector is None:
+        print("[AutoCorrect] Loading spelling corrector...")
+        module_dir = Path(__file__).parent.parent / "autoCorrect"
+        checkpoint_path = str(module_dir / "best_model.pt")
+        vocab_path = str(module_dir / "vocab.pkl")
+
+        # Auto-detect device
+        import torch
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+
+        _spelling_corrector = SpellingCorrector(
+            checkpoint_path=checkpoint_path,
+            vocab_path=vocab_path,
+            device=device
+        )
+        print(f"[AutoCorrect] Corrector loaded on {device}")
+
+    return _spelling_corrector
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FASTAPI APP
@@ -991,6 +1021,62 @@ async def update_document(
         created_at=document.created_at,
         updated_at=document.updated_at
     )
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# AUTOCORRECT ENDPOINT
+# ═══════════════════════════════════════════════════════════════════════════
+
+@app.post("/api/autocorrect", response_model=AutoCorrectResponse)
+async def autocorrect_text(
+    request: AutoCorrectRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Correct spelling in Vietnamese text.
+
+    Args:
+        request: Text to correct
+        current_user: Authenticated user
+
+    Returns:
+        Original and corrected text with processing time
+
+    Raises:
+        HTTPException: If correction fails
+    """
+    start_time = time.time()
+
+    try:
+        # Get corrector singleton
+        corrector = get_spelling_corrector()
+
+        # Correct text
+        corrected = corrector.predict(request.text)
+
+        processing_time = time.time() - start_time
+
+        print(f"[AutoCorrect] Corrected text for user {current_user.id} in {processing_time:.2f}s")
+
+        return AutoCorrectResponse(
+            original=request.text,
+            corrected=corrected,
+            processing_time=round(processing_time, 3)
+        )
+
+    except Exception as e:
+        print(f"[AutoCorrect] Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+        # Return original text if correction fails
+        processing_time = time.time() - start_time
+        return AutoCorrectResponse(
+            original=request.text,
+            corrected=request.text,  # Fallback to original
+            processing_time=round(processing_time, 3)
+        )
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # MAIN

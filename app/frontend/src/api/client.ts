@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ProcessingResponse, HealthResponse, Token, User, DocumentListResponse, DocumentDetail } from '../types';
+import type { ProcessingResponse, HealthResponse, Token, User, DocumentListResponse, DocumentDetail, AutoCorrectResponse } from '../types';
 import type { VisualizationResponse } from '../types/visualization';
 
 const API_BASE_URL = '/api';
@@ -155,6 +155,18 @@ export const apiClient = {
     const response = await axios.get<VisualizationResponse>(
       `${API_BASE_URL}/documents/${docId}/visualization`,
       { params: { page } }
+    );
+    return response.data;
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AUTOCORRECT
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  async correctText(text: string): Promise<AutoCorrectResponse> {
+    const response = await axios.post<AutoCorrectResponse>(
+      `${API_BASE_URL}/autocorrect`,
+      { text }
     );
     return response.data;
   },

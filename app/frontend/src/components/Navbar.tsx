@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Upload, Library, LogOut, User, Settings } from 'lucide-react';
+import { Upload, Library, LogOut, User, Settings, Wand2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export function Navbar() {
@@ -28,6 +28,18 @@ export function Navbar() {
               >
                 <Upload className="w-4 h-4" />
                 <span>Upload</span>
+              </Link>
+
+              <Link
+                to="/autocorrect"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                  isActive('/autocorrect')
+                    ? 'bg-blue-100 text-blue-500'
+                    : 'text-gray-700 hover:bg-blue-50'
+                }`}
+              >
+                <Wand2 className="w-4 h-4" />
+                <span>AutoCorrect</span>
               </Link>
 
               <Link
